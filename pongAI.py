@@ -22,6 +22,7 @@ clock = pygame.time.Clock()
 fps = 60
 
 game_font = pygame.font.SysFont("Luckiest Guy Regular",40)
+title_font = pygame.font.SysFont("Luckiest Guy Regular",80)
 
 player_score = 0
 opponent_score = 0
@@ -59,20 +60,29 @@ ball_speed_y = 7
 button_width = 200
 button_height = 50
 button_x = (screen.get_width()/ 2  - button_width /2)
-button_y = (screen.get_height()*0.75 - button_height/2)
+button_y = (screen.get_height()*0.9 - button_height/2)
 
 start_button = pygame.Rect(button_x, button_y, button_width, button_height)
+#friend and ai button in the center next to each other
+
+friend_button_x = (screen.get_width()/2 - button_width - 10)
+friend_button_y = (screen.get_height()*0.4 - button_height/2)
+friend_button = pygame.Rect(friend_button_x, friend_button_y, button_width, button_height)
+
+Ai_button_x = (screen.get_width()/2 + 10)
+Ai_button_y = (screen.get_height()*0.4 - button_height/2)
+Ai_button = pygame.Rect(Ai_button_x, Ai_button_y, button_width, button_height)
 
 difficulty_button_width = 200
 difficulty_button_height = 50
 medium_button_x = (screen.get_width()/2 - difficulty_button_width/2)
-medium_button_y = (screen.get_height()*0.5 - difficulty_button_height/2)
+medium_button_y = (screen.get_height()*0.7 - difficulty_button_height/2)
  
 hard_button_x = (screen.get_width()/2 - difficulty_button_width/2 + 220)
-hard_button_y = (screen.get_height()*0.5 - difficulty_button_height/2)
+hard_button_y = (screen.get_height()*0.7 - difficulty_button_height/2)
 
 easy_button_x = (screen.get_width()/2 - difficulty_button_width/2 - 220)
-easy_button_y = (screen.get_height()*0.5 - difficulty_button_height/2)
+easy_button_y = (screen.get_height()*0.7 - difficulty_button_height/2)
 
 medium_button = pygame.Rect(medium_button_x, medium_button_y, difficulty_button_width, difficulty_button_height)
 hard_button = pygame.Rect(hard_button_x, hard_button_y, difficulty_button_width, difficulty_button_height)
@@ -80,34 +90,55 @@ easy_button = pygame.Rect(easy_button_x, easy_button_y, difficulty_button_width,
 
 game_state = "start"
 difficulty = "medium"
+mode = "friend"
 #start Screen
 def start_screen():
     screen.fill(d_grey)
+    
+    game_text = title_font.render("PONG GAME", True, l_grey)
+    screen.blit(game_text, (screen.get_width()/2 - game_text.get_width()/2, screen.get_height()*0.10))
 
-    pygame.draw.rect(screen, green, easy_button, 2,border_radius=20)
-    easy_text = game_font.render("Easy", True, green)
-    easy_text_rect = easy_text.get_rect(center=easy_button.center)
-    screen.blit(easy_text, easy_text_rect)
+    versus_text = game_font.render("Play vs", True, l_grey)
+    screen.blit(versus_text,(screen.get_width()/2 - versus_text.get_width()/2, screen.get_height()*0.30))
+    
+    pygame.draw.rect(screen, cyan, friend_button, 2,border_radius=20)
+    friend_text = game_font.render("Friend", True, cyan)
+    friend_text_rect = friend_text.get_rect(center=friend_button.center)
+    screen.blit(friend_text, friend_text_rect)
 
-    pygame.draw.rect(screen, yellow, medium_button, 2,border_radius=20)
-    medium_text = game_font.render("Medium", True, yellow)
-    medium_text_rect = medium_text.get_rect(center=medium_button.center)
-    screen.blit(medium_text, medium_text_rect)
+    pygame.draw.rect(screen, magenta, Ai_button, 2,border_radius=20)
+    Ai_text = game_font.render("AI", True, magenta)
+    Ai_text_rect = Ai_text.get_rect(center=Ai_button.center)
+    screen.blit(Ai_text, Ai_text_rect)
 
-    pygame.draw.rect(screen, red, hard_button,2, border_radius=20)
-    hard_text = game_font.render("Hard", True, red)
-    hard_text_rect = hard_text.get_rect(center=hard_button.center)
-    screen.blit(hard_text, hard_text_rect)
+    if mode == "AI":
+        diff_text = game_font.render("Select Difficulty", True, l_grey)
+        screen.blit(diff_text,(screen.get_width()/2 - diff_text.get_width()/2, screen.get_height()*0.60))
+
+        pygame.draw.rect(screen, green, easy_button, 2,border_radius=20)
+        easy_text = game_font.render("Easy", True, green)
+        easy_text_rect = easy_text.get_rect(center=easy_button.center)
+        screen.blit(easy_text, easy_text_rect)
+
+        pygame.draw.rect(screen, yellow, medium_button, 2,border_radius=20)
+        medium_text = game_font.render("Medium", True, yellow)
+        medium_text_rect = medium_text.get_rect(center=medium_button.center)
+        screen.blit(medium_text, medium_text_rect)
+
+        pygame.draw.rect(screen, red, hard_button,2, border_radius=20)
+        hard_text = game_font.render("Hard", True, red)
+        hard_text_rect = hard_text.get_rect(center=hard_button.center)
+        screen.blit(hard_text, hard_text_rect)
 
     pygame.draw.rect(screen, l_grey, start_button, border_radius=20)
     start_text = game_font.render("Play", True, d_grey)
     text_rect = start_text.get_rect(center=start_button.center)
     screen.blit(start_text, text_rect)
 
-
-    game_text = game_font.render("PONG GAME", True, l_grey)
-    screen.blit(game_text, (screen.get_width()/2 - game_text.get_width()/2, screen.get_height()*0.25))
     pygame.display.flip()
+
+
+    
 
 
 #main loop
@@ -119,43 +150,75 @@ while running:
             running = False
         if game_state == "start":
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type ==pygame.MOUSEBUTTONDOWN:
+                if friend_button.collidepoint(event.pos):
+                    mode = "friend"
+                      # Stop AI movement when playing with a friend
+                elif Ai_button.collidepoint(event.pos):
+                    mode = "AI"
 
-                if easy_button.collidepoint(event.pos):
-                    difficulty = "easy"
-                    ball_speed_x = 7
-                    ball_speed_y = 7
-                    p_speed = 7
-                     
-                elif hard_button.collidepoint(event.pos):
-                    difficulty = "hard"
-                    ball_speed_x = 12
-                    ball_speed_y = 12
-                    p_speed = 12
-                elif medium_button.collidepoint(event.pos):
-                    difficulty = "medium"
-                    ball_speed_x = 10
-                    ball_speed_y = 10
-                    p_speed = 10
+
+                if mode == "AI":
+                    if easy_button.collidepoint(event.pos):
+                        difficulty = "easy"
+                        ball_speed_x = 7
+                        ball_speed_y = 7
+                        p_speed = 7
+                                
+                    elif hard_button.collidepoint(event.pos):
+                        difficulty = "hard"
+                        ball_speed_x = 12
+                        ball_speed_y = 12
+                        p_speed = 12
+                            
+                    elif medium_button.collidepoint(event.pos):
+                        difficulty = "medium"
+                        ball_speed_x = 10
+                        ball_speed_y = 10
+                        p_speed = 10
 
                 if start_button.collidepoint(event.pos):
                     game_state = "playing"
 
         elif game_state == "playing": 
             #key presses
-            if event.type == pygame.KEYDOWN:
-            #leftplayer
-                if event.key == pygame.K_s:
-                    player_speed = p_speed
-                if event.key ==pygame.K_w:
-                    player_speed = -p_speed
-            
-            
+            if mode == "friend":
+                if event.type == pygame.KEYDOWN:
+                    #leftplayer
+                    if event.key == pygame.K_s:
+                        player_speed = 7
+                    if event.key ==pygame.K_w:
+                        player_speed = -7
+                    
+                    #rightplayer
+                    if event.key == pygame.K_DOWN:
+                        opponent_speed = 7
+                    if event.key ==pygame.K_UP:
+                        opponent_speed = -7
 
-            if event.type == pygame.KEYUP:
-            #leftplayer
-                if event.key == pygame.K_s or event.key == pygame.K_w:
-                    player_speed = 0
+                if event.type == pygame.KEYUP:
+                    #leftplayer
+                    if event.key == pygame.K_s or event.key == pygame.K_w:
+                        player_speed = 0
+                
+                    #rightplayer
+                    if event.key == pygame.K_DOWN or event.key == pygame.K_UP:
+                        opponent_speed = 0
+
+            if mode == "AI":
+                if event.type == pygame.KEYDOWN:
+                #leftplayer
+                    if event.key == pygame.K_s:
+                        player_speed = p_speed
+                    if event.key ==pygame.K_w:
+                        player_speed = -p_speed
+                
+                
+
+                if event.type == pygame.KEYUP:
+                #leftplayer
+                    if event.key == pygame.K_s or event.key == pygame.K_w:
+                        player_speed = 0
 
     #Game Logic
 
@@ -169,24 +232,26 @@ while running:
     
         #paddle movement
         player_paddle.y += player_speed
+        if mode =="friend":
+            opponent_paddle.y += opponent_speed
 
-
+        if mode == "AI":
         # AI for opponent paddle
-        if difficulty == 'easy':
-            if opponent_paddle.centery < ball.centery:
-                opponent_paddle.y += 7
-            if opponent_paddle.centery > ball.centery:
-                opponent_paddle.y -= 7
-        elif difficulty == 'medium':
-            if opponent_paddle.centery < ball.centery:
-                opponent_paddle.y += 10
-            if opponent_paddle.centery > ball.centery:
-                opponent_paddle.y -= 10
-        elif difficulty == "hard":
-            if opponent_paddle.centery < ball.centery:
-                opponent_paddle.y += 12
-            if opponent_paddle.centery > ball.centery:
-                opponent_paddle.y -= 12
+            if difficulty == 'easy':
+                if opponent_paddle.centery < ball.centery:
+                    opponent_paddle.y += 7
+                if opponent_paddle.centery > ball.centery:
+                    opponent_paddle.y -= 7
+            elif difficulty == 'medium':
+                if opponent_paddle.centery < ball.centery:
+                    opponent_paddle.y += 10
+                if opponent_paddle.centery > ball.centery:
+                    opponent_paddle.y -= 10
+            elif difficulty == "hard":
+                if opponent_paddle.centery < ball.centery:
+                    opponent_paddle.y += 12
+                if opponent_paddle.centery > ball.centery:
+                    opponent_paddle.y -= 12
 
         #wall collision(t/b)
         if ball.top <= 0 or ball.bottom >= screen.get_height():
